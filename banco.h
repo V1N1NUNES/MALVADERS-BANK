@@ -40,7 +40,7 @@ int total_funcionarios=0;
 int total_pessoas= total_clientes + total_funcionarios;
 
 
-
+printf("arrocha");
 typedef struct{
     char agencia[tam];
     int num;
