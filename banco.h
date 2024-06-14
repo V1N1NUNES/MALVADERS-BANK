@@ -225,7 +225,7 @@ void menu_principal(){
 //MENSAGEM DO "MALVADER'S BANK"
 
 fopen 
-    printf("MENU PRINCIPAL\n\n");
+    printf("MENU PRINCIPAL\n\n1-abertura de conta\n");
 }
 
 
