@@ -7,6 +7,8 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <errno.h>
+#include <windows.h>
+#include <unistd.h>
 
 // protótipos de funções, variaveis globais, ....
 void menu_principal();
@@ -57,14 +59,14 @@ typedef struct
 {
     char agencia[tam];
     int num;
-    int limite;
+    float limite;
     int vencimento;
     char nome[tam];
-    int cpf;
-    int nascimento;
-    int telefone;
+    long int cpf;
+    long int nascimento;
+    long int telefone;
     char endereco[tam];
-    int cep;
+    long int cep;
     char local[tam];
     int casa;
     char bairro[tam];
@@ -80,114 +82,124 @@ void conta_poupanca()
     char resposta[5];
     do
     {
-        for (int i = 0; i < 1; i++)
-        {
-            printf("Digite qual a sua agencia:\n");
-            scanf("%s", &cp[i].agencia);
+        printf("Digite qual a sua agencia:\n");
+        fgets(cp[total_funcionarios].agencia, sizeof(cp[total_funcionarios].agencia), stdin);
 
-            printf("Digite o numero da conta:\n");
-            scanf("%d", &cp[i].num);
+        printf("Digite o numero da conta:\n");
+        scanf("%d", &cp[total_funcionarios].num);
+        getchar(); // Para consumir o newline deixado pelo scanf
 
-            printf("Digite o nome do cliente:\n");
-            fgets(cp[i].nome, tam, stdin);
+        printf("Digite o nome do cliente:\n");
+        fgets(cp[total_funcionarios].nome, sizeof(cp[total_funcionarios].nome), stdin);
 
-            printf("Digite o CPF:\n");
-            scanf("%d", &cp[i].cpf);
+        printf("Digite o CPF:\n");
+        scanf("%d", &cp[total_funcionarios].cpf);
+        getchar();
 
-            printf("Digite a data de nascimento:\n");
-            scanf("%d", &cp[i].nascimento);
+        printf("Digite a data de nascimento:\n");
+        scanf("%d", &cp[total_funcionarios].nascimento);
+        getchar();
 
-            printf("Digite o telefone/celular:\n");
-            scanf("%d", cp[i].telefone);
+        printf("Digite o telefone/celular:\n");
+        scanf("%d", &cp[total_funcionarios].telefone);
+        getchar();
 
-            printf("Digite o endereco do cliente:\n");
-            fgets(cp[i].endereco, tam, stdin);
+        printf("Digite o endereco do cliente:\n");
+        fgets(cp[total_funcionarios].endereco, sizeof(cp[total_funcionarios].endereco), stdin);
 
-            printf("Digite o CEP:\n");
-            scanf("%d", &cp[i].cep);
+        printf("Digite o CEP:\n");
+        scanf("%d", &cp[total_funcionarios].cep);
+        getchar();
 
-            printf("Digite o local:\n");
-            fgets(cp[i].local, tam, stdin);
+        printf("Digite o local:\n");
+        fgets(cp[total_funcionarios].local, sizeof(cp[total_funcionarios].local), stdin);
 
-            printf("Digite o numero da  casa:\n");
-            scanf("%d", &cp[i].casa);
+        printf("Digite o numero da casa:\n");
+        scanf("%d", &cp[total_funcionarios].casa);
+        getchar();
 
-            printf("Digite o bairro:\n");
-            fgets(cp[i].bairro, tam, stdin);
+        printf("Digite o bairro:\n");
+        fgets(cp[total_funcionarios].bairro, sizeof(cp[total_funcionarios].bairro), stdin);
 
-            printf("Digite a cidade:\n");
-            fgets(cp[i].cidade, tam, stdin);
+        printf("Digite a cidade:\n");
+        fgets(cp[total_funcionarios].cidade, sizeof(cp[total_funcionarios].cidade), stdin);
 
-            printf("Digite o estado:\n");
-            fgets(cp[i].estado, tam, stdin);
+        printf("Digite o estado:\n");
+        fgets(cp[total_funcionarios].estado, sizeof(cp[total_funcionarios].estado), stdin);
 
-            printf("Digite a senha do cliente:\n");
-            scanf("%d", &cp[i].senha);
-        }
-        total_funcionarios++; // adicionar conta como funcionarios ou clientes??//
-        printf("Deseja cadastrar mais um cliente/funcionario?\n");
-        scanf("%s", &resposta);
-    } while (strcpy(resposta, "sim") == 0);
+        printf("Digite a senha do cliente:\n");
+        scanf("%d", &cp[total_funcionarios].senha);
+        getchar();
+
+        total_funcionarios++; // Incrementa o contador de clientes ou funcionários
+
+        printf("Deseja cadastrar mais um cliente/funcionario? (sim/nao)\n");
+        scanf("%s", resposta);
+        getchar(); // Para consumir o newline deixado pelo scanf
+    } while (strcmp(resposta, "sim") == 0);
 }
-void conta_corrente()
-{
+void conta_corrente() {
     char resposta[5];
-    do
-    {
-        for (int i = 0; i < 1; i++)
-        {
-            printf("Digite qual a sua agencia:\n");
-            scanf("%s", &cc[i].agencia);
+    int total_contas = 0;
 
-            printf("Digite o numero da conta:\n");
-            scanf("%d", &cc[i].num);
+    do {
+        printf("Digite qual a sua agencia:\n");
+        scanf("%s", cc[total_contas].agencia);
 
-            printf("Digite o limite da conta:\n");
-            scanf("%f", &cc[i].limite);
+        printf("Digite o numero da conta:\n");
+        scanf("%d", &cc[total_contas].num);
 
-            printf("Digite o a data de vencimento:\n");
-            scanf("%d", &cc[i].vencimento);
+        printf("Digite o limite da conta:\n");
+        scanf("%f", &cc[total_contas].limite);
 
-            printf("Digite o nome do cliente:\n");
-            fgets(cc[i].nome, tam, stdin);
+        printf("Digite o dia de vencimento:\n");
+        scanf("%d", &cc[total_contas].vencimento);
 
-            printf("Digite o CPF:\n");
-            scanf("%d", &cc[i].cpf);
+        printf("Digite o nome do cliente:\n");
+        getchar(); // Limpa o buffer de entrada
+        fgets(cc[total_contas].nome, tam, stdin);
 
-            printf("Digite a data de nascimento:\n");
-            scanf("%d", &cc[i].nascimento);
+        printf("Digite o CPF:\n");
+        scanf("%ld", &cc[total_contas].cpf);
 
-            printf("Digite o telefone/celular:\n");
-            scanf("%d", cc[i].telefone);
+        printf("Digite a data de nascimento:\n");
+        scanf("%ld", &cc[total_contas].nascimento);
 
-            printf("Digite o endereco do cliente:\n");
-            fgets(cc[i].endereco, tam, stdin);
+        printf("Digite o telefone/celular:\n");
+        scanf("%ld", &cc[total_contas].telefone);
 
-            printf("Digite o CEP:\n");
-            scanf("%d", &cc[i].cep);
+        printf("Digite o endereco do cliente:\n");
+        getchar(); // Limpa o buffer de entrada
+        fgets(cc[total_contas].endereco, tam, stdin);
 
-            printf("Digite o local:\n");
-            fgets(cc[i].local, tam, stdin);
+        printf("Digite o CEP:\n");
+        scanf("%ld", &cc[total_contas].cep);
 
-            printf("Digite o numero da  casa:\n");
-            scanf("%d", &cc[i].casa);
+        printf("Digite o local:\n");
+        getchar(); // Limpa o buffer de entrada
+        fgets(cc[total_contas].local, tam, stdin);
 
-            printf("Digite o bairro:\n");
-            fgets(cc[i].bairro, tam, stdin);
+        printf("Digite o numero da casa:\n");
+        scanf("%d", &cc[total_contas].casa);
 
-            printf("Digite a cidade:\n");
-            fgets(cc[i].cidade, tam, stdin);
+        printf("Digite o bairro:\n");
+        getchar(); // Limpa o buffer de entrada
+        fgets(cc[total_contas].bairro, tam, stdin);
 
-            printf("Digite o estado:\n");
-            fgets(cc[i].estado, tam, stdin);
+        printf("Digite a cidade:\n");
+        fgets(cc[total_contas].cidade, tam, stdin);
 
-            printf("Digite a senha do cliente:\n");
-            scanf("%d", &cc[i].senha);
-        }
-        total_funcionarios++; // adicionar conta como funcionarios ou clientes??//
-        printf("Deseja cadastrar mais um cliente/funcionario?\n");
-        scanf("%s", &resposta);
-    } while (strcpy(resposta, "sim") == 0);
+        printf("Digite o estado:\n");
+        fgets(cc[total_contas].estado, tam, stdin);
+
+        printf("Digite a senha do cliente:\n");
+        scanf("%d", &cc[total_contas].senha);
+
+        total_contas++; // Incrementa o contador de contas
+
+        printf("Deseja cadastrar mais um cliente/funcionario? (sim ou nao)\n");
+        scanf("%s", resposta);
+    } while (strcmp(resposta, "sim") == 0);
 }
 void abertura_conta()
 {
@@ -222,7 +234,7 @@ void abertura_conta()
 // 2- Encerramento de conta
 
 //- MENU -
-void menu_funcionario(void)
+void menu_funcionario()
 {
     int opcao;
     printf("MENU FUNCIONARIO\n\n");
@@ -270,25 +282,20 @@ void menu_funcionario(void)
         menu_principal();
     }
 }
-void menu_principal()
-{
-    // MENSAGEM DO "MALVADER'S BANK"
-
+void menu_principal(){
     int opcao;
     int senha;
-    do
-    {
-        printf("MENU PRINCIPAL\n\n");
-        printf("1-Menu funcionario\n");
-        printf("2-Menu cliente\n");
-        printf("3-Sair\n\n");
-        fflush(stdin);
-        scanf("%d", &opcao);
 
-        if (opcao > 0 && opcao < 4)
-        {
-            switch (opcao)
-            {
+    do {
+        printf("MENU PRINCIPAL\n\n");
+        printf("1 - Menu funcionario\n");
+        printf("2 - Menu cliente\n");
+        printf("3 - Sair\n\n");
+
+        scanf("%d", &opcao);
+        getchar(); // Limpa o buffer de entrada
+
+        switch (opcao) {
             case 1:
                 printf("Digite a senha:\n");
                 scanf("%d", &senha);
@@ -303,11 +310,9 @@ void menu_principal()
                 printf("Até logo!\n");
                 printf("AQUI O SEU DINHEIRO GANHA FORÇA\n");
                 break;
-            }
         }
-        else
-        {
-            printf("Numero digitado não corresponde as opções.\n");
-        }
-    } while (opcao < 1 || opcao > 3);
+
+    } while (opcao != 3);
+
+    return;
 }
