@@ -1,7 +1,4 @@
-#ifndef banco.h
-#define banco.h
-
-//adicionando as bibliotecas que seram utilizadas
+// adicionando as bibliotecas que seram utilizadas
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
@@ -11,37 +8,35 @@
 #include <stdbool.h>
 #include <errno.h>
 
-//protótipos de funções, variaveis globais, ....
+// protótipos de funções, variaveis globais, ....
 void menu_principal();
-void menu_funcionario();
-void menu_cliente();
-void abertura_conta();
-void conte_corrente();
-void conta_poupanca();
-void encerramento_conta();
-void consultar_dados();
-void consultar_contas();
-void consultar_clientes();
-void consultar_funcionarios();
-void alterar_dados();
-void alterar_conta();
-void alterar_funcionarios();
-void alterar_clientes();
-void cadastro_funcionario();
-void gerar_relatorios();
+// void menu_funcionario();
+// void menu_cliente();
+// void abertura_conta();
+// void conte_corrente();
+// void conta_poupanca();
+// void encerramento_conta();
+// void consultar_dados();
+// void consultar_contas();
+// void consultar_clientes();
+// void consultar_funcionarios();
+// void alterar_dados();
+// void alterar_conta();
+// void alterar_funcionarios();
+// void alterar_clientes();
+// void cadastro_funcionario();
+// void gerar_relatorios();
 
+#define tam 270
+int senha_adm = 102938;
+int senha_funcionario = 123456;
+int senha_cliente = 123456;
+int total_clientes = 0;
+int total_funcionarios = 0;
+int total_pessoas = total_clientes + total_funcionarios;
 
-#define  tam 270
-int senha_adm= 102938;
-int senha_funcionario= 123456;
-int senha_cliente= 123456;
-int total_clientes=0;
-int total_funcionarios=0;
-int total_pessoas= total_clientes + total_funcionarios;
-
-
-
-typedef struct{
+typedef struct
+{
     char agencia[tam];
     int num;
     char nome[tam];
@@ -52,13 +47,14 @@ typedef struct{
     int cep;
     char local[tam];
     int casa;
-    char bairro [tam];
+    char bairro[tam];
     char cidade[tam];
     char estado[tam];
     int senha;
 } poupanca;
 poupanca cp[tam];
-typedef struct{
+typedef struct
+{
     char agencia[tam];
     int num;
     int limite;
@@ -71,20 +67,21 @@ typedef struct{
     int cep;
     char local[tam];
     int casa;
-    char bairro [tam];
+    char bairro[tam];
     char cidade[tam];
     char estado[tam];
     int senha;
 } corrente;
 corrente cc[tam];
 
-
-
-//1- abertura de contas
-void conta_poupanca(){
+// 1- abertura de contas
+void conta_poupanca()
+{
     char resposta[5];
-    do{
-        for(int i=0;i<1;i++){
+    do
+    {
+        for (int i = 0; i < 1; i++)
+        {
             printf("Digite qual a sua agencia:\n");
             scanf("%s", &cp[i].agencia);
 
@@ -92,7 +89,7 @@ void conta_poupanca(){
             scanf("%d", &cp[i].num);
 
             printf("Digite o nome do cliente:\n");
-            fgets(cp[i].nome,tam,stdin);
+            fgets(cp[i].nome, tam, stdin);
 
             printf("Digite o CPF:\n");
             scanf("%d", &cp[i].cpf);
@@ -108,36 +105,37 @@ void conta_poupanca(){
 
             printf("Digite o CEP:\n");
             scanf("%d", &cp[i].cep);
-            
+
             printf("Digite o local:\n");
-            fgets(cp[i].local,tam,stdin);
+            fgets(cp[i].local, tam, stdin);
 
             printf("Digite o numero da  casa:\n");
             scanf("%d", &cp[i].casa);
 
             printf("Digite o bairro:\n");
-            fgets(cp[i].bairro,tam,stdin);
+            fgets(cp[i].bairro, tam, stdin);
 
             printf("Digite a cidade:\n");
-            fgets(cp[i].cidade,tam,stdin);
+            fgets(cp[i].cidade, tam, stdin);
 
             printf("Digite o estado:\n");
-            fgets(cp[i].estado,tam,stdin);
+            fgets(cp[i].estado, tam, stdin);
 
             printf("Digite a senha do cliente:\n");
             scanf("%d", &cp[i].senha);
-
         }
-    total_funcionarios ++;  //adicionar conta como funcionarios ou clientes??//
-    printf("Deseja cadastrar mais um cliente/funcionario?\n");
-    scanf("%s", &resposta);
-    }while (strcpy(resposta,"sim")==0);
-    
+        total_funcionarios++; // adicionar conta como funcionarios ou clientes??//
+        printf("Deseja cadastrar mais um cliente/funcionario?\n");
+        scanf("%s", &resposta);
+    } while (strcpy(resposta, "sim") == 0);
 }
-void conta_corrente(){
+void conta_corrente()
+{
     char resposta[5];
-    do{
-        for(int i=0;i<1;i++){
+    do
+    {
+        for (int i = 0; i < 1; i++)
+        {
             printf("Digite qual a sua agencia:\n");
             scanf("%s", &cc[i].agencia);
 
@@ -151,7 +149,7 @@ void conta_corrente(){
             scanf("%d", &cc[i].vencimento);
 
             printf("Digite o nome do cliente:\n");
-            fgets(cc[i].nome,tam,stdin);
+            fgets(cc[i].nome, tam, stdin);
 
             printf("Digite o CPF:\n");
             scanf("%d", &cc[i].cpf);
@@ -163,145 +161,142 @@ void conta_corrente(){
             scanf("%d", cc[i].telefone);
 
             printf("Digite o endereco do cliente:\n");
-            fgets(cc[i].endereco,tam,stdin);
+            fgets(cc[i].endereco, tam, stdin);
 
             printf("Digite o CEP:\n");
             scanf("%d", &cc[i].cep);
-            
+
             printf("Digite o local:\n");
-            fgets(cc[i].local,tam,stdin);
+            fgets(cc[i].local, tam, stdin);
 
             printf("Digite o numero da  casa:\n");
             scanf("%d", &cc[i].casa);
 
             printf("Digite o bairro:\n");
-            fgets(cc[i].bairro,tam,stdin);
+            fgets(cc[i].bairro, tam, stdin);
 
             printf("Digite a cidade:\n");
-            fgets(cc[i].cidade,tam,stdin);
+            fgets(cc[i].cidade, tam, stdin);
 
             printf("Digite o estado:\n");
-            fgets(cc[i].estado,tam,stdin);
+            fgets(cc[i].estado, tam, stdin);
 
             printf("Digite a senha do cliente:\n");
             scanf("%d", &cc[i].senha);
-
         }
-    total_funcionarios ++;  //adicionar conta como funcionarios ou clientes??//
-    printf("Deseja cadastrar mais um cliente/funcionario?\n");
-    scanf("%s", &resposta);
-    }while (strcpy(resposta,"sim")==0);
+        total_funcionarios++; // adicionar conta como funcionarios ou clientes??//
+        printf("Deseja cadastrar mais um cliente/funcionario?\n");
+        scanf("%s", &resposta);
+    } while (strcpy(resposta, "sim") == 0);
 }
-void abertura_conta(){
-    int opcao=0;
+void abertura_conta()
+{
+    int opcao = 0;
     printf("ABERTURA DE CONTA\n\n");
     printf("1- Conta poupança\n2- Conta corrente\n3- Voltar\n");
     scanf("%d", &opcao);
-    if(opcao <= 0 && opcao >= 4){
+    if (opcao <= 0 && opcao >= 4)
+    {
         printf("numero informado invalido.\n");
-        menu_funcionrio();
-    }else if(opcao >= 1 && opcao <= 3){
-        switch (opcao){
-            case 1:
-            conta_poupanca();
+        // menu_funcionario();
+    }
+    else if (opcao >= 1 && opcao <= 3)
+    {
+        switch (opcao)
+        {
+        case 1:
+            // conta_poupanca();
             break;
 
-            case 2:
-            conta_corrente();
+        case 2:
+            // conta_corrente();
             break;
 
-            case 3:
-            menu_funcionrio();
+        case 3:
+            // menu_funcionario();
             break;
         }
     }
 }
 
-//2- Encerramento de conta
+// 2- Encerramento de conta
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//- MENU - 
-void menu_funcionrio(void){
+//- MENU -
+void menu_funcionario(void)
+{
     int opcao;
     printf("MENU FUNCIONARIO\n\n");
     printf("1- Abertura de conta.\n2- Encerramento da conta.\n3- Consultar dados.\n4- Alterar dados.\n5- Cadastro de funcionario.\n6- Gerar relatoios.\n7- Voltar ao MENU PRINCIPAL.\n");
     scanf("%d", &opcao);
 
-//verificar se o numero digitado é inteiro//
+    // verificar se o numero digitado é inteiro//
 
-    if(opcao > 0 && opcao < 8){
-        switch (opcao){
-            case 1:
+    if (opcao > 0 && opcao < 8)
+    {
+        switch (opcao)
+        {
+        case 1:
             abertura_conta();
             break;
 
-            case 2:
-            encerramento_conta();
+        case 2:
+            // encerramento_conta();
             break;
 
-            case 3:
-            consultar_dados();
+        case 3:
+            // consultar_dados();
             break;
 
-            case 4:
-            alterar_dados();
+        case 4:
+            // alterar_dados();
             break;
 
-            case 5:
-            cadastro_funcionario();
+        case 5:
+            // cadastro_funcionario();
             break;
 
-            case 6:
-            gerar_relatorios();
+        case 6:
+            // gerar_relatorios();
             break;
 
-            case 7:
+        case 7:
             menu_principal();
             break;
         }
     }
-    else{
+    else
+    {
         printf("numero digitado invalido.\n");
         menu_principal();
     }
 }
-void menu_principal(){
-//MENSAGEM DO "MALVADER'S BANK"
+void menu_principal()
+{
+    // MENSAGEM DO "MALVADER'S BANK"
 
     int opcao;
-    do {
+    int senha;
+    do
+    {
         printf("MENU PRINCIPAL\n\n");
-        printf("1-Menu funcionario\n2-Menu cliente\n3-Sair\n");
+        printf("1-Menu funcionario\n");
+        printf("2-Menu cliente\n");
+        printf("3-Sair\n\n");
+        fflush(stdin);
         scanf("%d", &opcao);
-        while(getchar() != '\n'); // Limpa o buffer de entrada
 
-        if(opcao > 0 && opcao < 4){
-            switch (opcao){
+        if (opcao > 0 && opcao < 4)
+        {
+            switch (opcao)
+            {
             case 1:
                 printf("Digite a senha:\n");
                 scanf("%d", &senha);
-                menu_funcionario();
+                // menu_funcionario();
                 break;
 
             case 2:
-                menu_cliente();
+                // menu_cliente();
                 break;
 
             case 3:
@@ -309,17 +304,10 @@ void menu_principal(){
                 printf("AQUI O SEU DINHEIRO GANHA FORÇA\n");
                 break;
             }
-        }else{
+        }
+        else
+        {
             printf("Numero digitado não corresponde as opções.\n");
         }
-    } while(opcao < 1 || opcao > 3);
+    } while (opcao < 1 || opcao > 3);
 }
-
-
-
-
-
-
-
-
-#endif
