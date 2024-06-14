@@ -81,7 +81,6 @@ corrente cc[tam];
 
 
 
-printf("deu certo gay?\n");
 
 //1- abertura de contas
 void conta_poupanca(){
