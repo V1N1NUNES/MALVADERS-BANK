@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <errno.h>
 
+//variaveis globais
 #define tam 270
 int senha_adm= 102938;
 int senha_funcionario= 123456;
@@ -18,7 +19,7 @@ int total_funcionarios=0;
 int total_clientes=0;
 int total_pessoas = total_funcionarios + total_clientes;
 
-// protótipos de funções, variaveis globais, ....
+// protótipos de funções
 void menu_principal();
 void menu_funcionario();
 void menu_cliente();
@@ -26,7 +27,7 @@ void abertura_conta();
 void conte_corrente();
 void conta_poupanca();
 void criarArquivoClientes();
-// void encerramento_conta();
+void encerramento_conta();
 // void consultar_dados();
 // void consultar_contas();
 // void consultar_clientes();
@@ -38,8 +39,7 @@ void criarArquivoClientes();
 // void cadastro_funcionario();
 // void gerar_relatorios();
 
-
-
+// Dados
 struct Cliente {
     float saldo;
     char agencia[tam];
@@ -75,7 +75,6 @@ struct Poupanca{
     char estado[tam];
     int senha;
 };
-
 struct ContaCorrente {
     char agencia[tam];
     int num;
@@ -94,11 +93,50 @@ struct ContaCorrente {
     char estado[tam];
     int senha;
 };
-
 Poupanca cp[tam];
 ContaCorrente cc[tam];
 
-void conta_poupanca() {
+//funções para armazenamento no arquivo
+void criarArquivoClientes(const char *nomeArquivo, struct Cliente clientes[], int numClientes) {
+    // Abre o arquivo para escrita
+    FILE *arquivo = fopen(nomeArquivo, "w");
+
+    // Verifica se o arquivo foi aberto corretamente
+    if (arquivo == NULL) {
+        fprintf(stderr, "Erro ao abrir o arquivo %s\n", nomeArquivo);
+        return;
+    }
+
+    // Escreve os dados dos clientes no arquivo
+    for (int i = 0; i < numClientes; ++i) {
+        fprintf(arquivo, "Nome: %s\n", clientes[i].nome);
+        fprintf(arquivo, "Agencia: %s\n", clientes[i].agencia);
+        fprintf(arquivo, "Num: %d\n", clientes[i].num);
+        fprintf(arquivo, "Saldo: %f\n", clientes[i].saldo);
+        fprintf(arquivo, "Limite: %f\n", clientes[i].limite);
+        fprintf(arquivo, "Vencimento: %d\n", clientes[i].vencimento);
+        fprintf(arquivo, "CPF: %d\n", clientes[i].cpf);
+        fprintf(arquivo, "Nascimento: %d\n", clientes[i].nascimento);
+        fprintf(arquivo, "Telefone: %d\n", clientes[i].telefone);
+        fprintf(arquivo, "Endereço: %s\n", clientes[i].endereco);
+        fprintf(arquivo, "CEP: %d\n", clientes[i].cep);
+        fprintf(arquivo, "Local: %s\n", clientes[i].local);
+        fprintf(arquivo, "Casa: %d\n", clientes[i].casa);
+        fprintf(arquivo, "Bairro: %s\n", clientes[i].bairro);
+        fprintf(arquivo, "Cidade: %s\n", clientes[i].cidade);
+        fprintf(arquivo, "Estado: %s\n", clientes[i].estado);
+        fprintf(arquivo, "Senha: %d\n", clientes[i].senha);
+        fprintf(arquivo, "\n"); // Linha em branco para separar os registros
+    }
+
+    // Fecha o arquivo
+    fclose(arquivo);
+    printf("Arquivo %s criado com sucesso!\n", nomeArquivo);
+}
+
+
+//1- Abertura de conta
+void conta_poupanca() { //armazenar no arquivo
     char resposta[10]; 
     do {
         for (int i = 0; i < 1; i++) {
@@ -154,10 +192,11 @@ void conta_poupanca() {
         scanf("%s", resposta);
         getchar(); 
     } while (strcmp(resposta, "sim") == 0);
+    menu_funcionario();
 }
-
-void conta_corrente() {
+void conta_corrente() { //armazenar no arquivo
     char resposta[10]; 
+
     do {
         for (int i = 0; i < 1; i++) {
             printf("Digite qual a sua agencia:\n");
@@ -219,8 +258,8 @@ void conta_corrente() {
         scanf("%s", resposta);
         getchar();
     } while (strcmp(resposta, "sim") == 0);
+    menu_funcionario();
 }
-
 void abertura_conta()
 {
     int opcao = 0;
@@ -251,50 +290,59 @@ void abertura_conta()
     }
 }
 
-void criarArquivoClientes(const char *nomeArquivo, struct Cliente clientes[], int numClientes) {
-    // Abre o arquivo para escrita
-    FILE *arquivo = fopen(nomeArquivo, "w");
+//2- encerramento de conta
+void encerramento_conta(){
+    int senha;
+    int opcao;
+    char resposta[10];
 
-    // Verifica se o arquivo foi aberto corretamente
-    if (arquivo == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo %s\n", nomeArquivo);
+    printf("ENCERRAMENTO DE CONTA\n\n");
+    printf("1- Excluir Conta\n2- Voltar\n");
+    scanf("%d", &opcao);
+
+    if(opcao == 2){
+        menu_funcionario();
         return;
     }
 
-    // Escreve os dados dos clientes no arquivo
-    for (int i = 0; i < numClientes; ++i) {
-        fprintf(arquivo, "Nome: %s\n", clientes[i].nome);
-        fprintf(arquivo, "Agencia: %s\n", clientes[i].agencia);
-        fprintf(arquivo, "Num: %d\n", clientes[i].num);
-        fprintf(arquivo, "Saldo: %f\n", clientes[i].saldo);
-        fprintf(arquivo, "Limite: %f\n", clientes[i].limite);
-        fprintf(arquivo, "Vencimento: %d\n", clientes[i].vencimento);
-        fprintf(arquivo, "CPF: %d\n", clientes[i].cpf);
-        fprintf(arquivo, "Nascimento: %d\n", clientes[i].nascimento);
-        fprintf(arquivo, "Telefone: %d\n", clientes[i].telefone);
-        fprintf(arquivo, "Endereço: %s\n", clientes[i].endereco);
-        fprintf(arquivo, "CEP: %d\n", clientes[i].cep);
-        fprintf(arquivo, "Local: %s\n", clientes[i].local);
-        fprintf(arquivo, "Casa: %d\n", clientes[i].casa);
-        fprintf(arquivo, "Bairro: %s\n", clientes[i].bairro);
-        fprintf(arquivo, "Cidade: %s\n", clientes[i].cidade);
-        fprintf(arquivo, "Estado: %s\n", clientes[i].estado);
-        fprintf(arquivo, "Senha: %d\n", clientes[i].senha);
-        fprintf(arquivo, "\n"); // Linha em branco para separar os registros
-    }
+    do{
+        printf("Digite a senha de administrador:\n");
+        scanf("%d", &senha);
 
-    // Fecha o arquivo
-    fclose(arquivo);
+        if (senha == senha_adm){
+            int num;
+            printf("ENCERRAMENTO DE CONTA\n\n");
+            printf("Digite o numero da conta que deseja excluir:\n");
+            scanf("%d", &num);
 
-    printf("Arquivo %s criado com sucesso!\n", nomeArquivo);
+            for(int i=0; i<total_pessoas; i++){
+                if(num == cc[i].num || num == cp[i].num){
+                    for(int j=i; j<total_pessoas-1; j++){
+                        cc[j] = cc[j+1];
+                        cp[j] = cp[j+1];
+                    }
+                    total_pessoas--;
+                    break;
+                }
+            }  
+        } else {
+            printf("Senha digitada incorreta.\n");
+            menu_funcionario();
+            return;
+        }
+
+        printf("Deseja continuar? (sim/nao): ");
+        scanf("%s", resposta);
+    } while(strcmp(resposta, "nao") != 0);
+    menu_funcionario();
 }
 
-//void encerramento_de_conta()
 
 //- MENU -
 void menu_funcionario(void)
 {
     int opcao;
+    int senha;
     printf("MENU FUNCIONARIO\n\n");
     printf("1- Abertura de conta.\n2- Encerramento da conta.\n3- Consultar dados.\n4- Alterar dados.\n5- Cadastro de funcionario.\n6- Gerar relatoios.\n7- Voltar ao MENU PRINCIPAL.\n");
     scanf("%d", &opcao);
@@ -310,6 +358,14 @@ void menu_funcionario(void)
             break;
 
         case 2:
+            printf("Digite a senha de administrador:\n");
+            scanf("%d", &senha);
+            if(senha == senha_adm){
+                encerramento_conta();
+            }else{
+                printf("Senha nao corresponde.\n\n");
+                menu_funcionario();
+            }
             break;
 
         case 3:
@@ -344,7 +400,7 @@ void menu_principal()
     // MENSAGEM DO "MALVADER'S BANK"
 
     int opcao;
-
+    int senha=0;
     do
     {
         printf("MENU PRINCIPAL\n\n");
@@ -359,19 +415,32 @@ void menu_principal()
             switch (opcao)
             {
             case 1:
-                printf("Digite a senha:\n");
-                scanf("%d", &senha_funcionario);
-                menu_funcionario();
+                printf("Digite a senha de  administrador:\n");
+                scanf("%d", &senha);
+                if(senha == senha_adm){
+                    menu_funcionario();
+                }else{
+                    printf("Senha nao corresponde.\n\n");
+                    menu_principal();
+                }
                 break;
 
 
             case 2:
-               menu_cliente();
+               printf("Digite a senha de administrador:\n");
+               scanf("%d", &senha);
+               if(senha == senha_adm){
+                 menu_cliente();
+               }else{
+                printf("Senha nao corresponde.\n\n");
+                menu_funcionario();
+               }
+               
                 break;
 
             case 3:
-                printf("Até logo!\n");
-                printf("AQUI O SEU DINHEIRO GANHA FORÇA\n");
+                printf("Até logo!\n\n");
+                printf("AQUI O SEU DINHEIRO GANHA FORCA\n-MALVADER'S BANK\n\n\n");
                 break;
             }
         }
