@@ -337,6 +337,14 @@ void encerramento_conta(){
     menu_funcionario();
 }
 
+//3- consultar dados
+
+//4- alterar dados
+
+//5- cadastro de funcionarios
+
+//6- gerar relatorios
+
 
 //- MENU -
 void menu_funcionario(void)
