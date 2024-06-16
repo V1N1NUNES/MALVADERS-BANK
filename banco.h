@@ -354,7 +354,7 @@ void encerramento_conta(){
 }
 
 
-//3- consultar dados - (consultar_contas - imcompleta)
+//3- consultar dados - (consultar_contas (adicionar variaveis nas structs cc e cp))
 void consultar_dados(){
     int opcao;
     do {
@@ -366,7 +366,7 @@ void consultar_dados(){
         if(opcao >= 1 && opcao <= 4){
             switch (opcao){
                 case 1:
-                    //consultar_contas()
+                    void consultar_contas();
                     break;
 
                 case 2:
@@ -387,34 +387,44 @@ void consultar_dados(){
     } while(opcao < 1 || opcao > 4);
 }
 void consultar_contas(){ 
-    int num;
+    int num, contaEncontrada = 0;
     printf("Digite o numero da conta que deseja consultar:\n");
     scanf("%d", &num);
-
+    
     for(int i=0;i<total_pessoas;i++){
         if(num == cc[i].num){ //conta corrente
+            contaEncontrada = 1;
             printf("tipo de conta: Conta corrente\n");
-            printf("Nome:\n");
-            printf("CPF:\n");
-            printf("Saldo da conta:\n");
-            printf("limite da conta:\n");
-            printf("Data de vencimento:\n");
+            printf("Nome:%s\n", cc[i].nome);
+            printf("CPF:%d\n", cc[i].cpf);
+            printf("Saldo da conta:%f\n"); // Supondo que saldo é um float
+            printf("limite da conta:%f\n", cc[i].limite);
+            printf("Data de vencimento:%d\n", cc[i].vencimento);
             system("pause");
             printf("Aperte qualquer tecla.\n");
             consultar_dados();
-       }
-       if (num == cp[i].num){ //conta poupanca
-            printf("tipo de conta: Conta corrente\n");
-            printf("Nome:\n");
-            printf("CPF:\n");
-            printf("Saldo da conta:\n");
-            printf("limite da conta:\n");
-            printf("Data de vencimento:\n");
+            break;
+        }
+        else if (num == cp[i].num){ //conta poupanca
+            contaEncontrada = 1;
+            printf("tipo de conta: Conta poupanca\n");
+            printf("Nome:%s\n", cp[i].nome);
+            printf("CPF:%d\n", cp[i].cpf);
+            printf("Saldo da conta:%f\n"); // adicionar saldo na struct cp 
+            printf("Limite:%f\n"); // adicionar saldo na struct cp
+            printf("Data de vencimento:%d\n"); // adicionar saldo na struct 
             system("pause");
             printf("Aperte qualquer tecla.\n");
             consultar_dados();
+            break;
         }   
     }
+    
+    if (!contaEncontrada){
+        printf("Conta inexistente ou excluida.\n");
+    }
+    system("pause");
+    menu_funcionario();
 }
 
 
