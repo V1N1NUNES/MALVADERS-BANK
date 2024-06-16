@@ -28,7 +28,7 @@ void conte_corrente();
 void conta_poupanca();
 void criarArquivoClientes();
 void encerramento_conta();
-// void consultar_dados();
+void consultar_dados();
 // void consultar_contas();
 // void consultar_clientes();
 // void consultar_funcionarios();
@@ -44,7 +44,7 @@ struct Cliente {
     float saldo;
     char agencia[tam];
     int num;
-    float limite; // Alterado para float para representar limite de conta corrente
+    float limite;
     int vencimento;
     char nome[tam];
     int cpf;
@@ -59,9 +59,10 @@ struct Cliente {
     char estado[tam];
     int senha;
 };
+Cliente client[tam];
 struct Poupanca{
     char agencia[tam];
-    int num;
+    long int num;
     char nome[tam];
     int cpf;
     int nascimento;
@@ -77,8 +78,8 @@ struct Poupanca{
 };
 struct ContaCorrente {
     char agencia[tam];
-    int num;
-    float limite; // Alterado para float para representar limite de conta corrente
+    long int num;
+    float limite;
     int vencimento;
     char nome[tam];
     int cpf;
@@ -96,8 +97,8 @@ struct ContaCorrente {
 Poupanca cp[tam];
 ContaCorrente cc[tam];
 
-//funções para armazenamento no arquivo
-void criarArquivoClientes(const char *nomeArquivo, struct Cliente clientes[], int numClientes) {
+//armazenamento no arquivo
+void criarArquivoClientes(const char *nomeArquivo, struct Cliente clientes[], int numClientes){
     // Abre o arquivo para escrita
     FILE *arquivo = fopen(nomeArquivo, "w");
 
@@ -135,8 +136,12 @@ void criarArquivoClientes(const char *nomeArquivo, struct Cliente clientes[], in
 }
 
 
-//1- Abertura de conta
-void conta_poupanca() { //armazenar no arquivo
+
+//                  --  MENU FUNCIONARIO  --                               
+
+
+//1- Abertura de conta - (erro na captura do local do usuario)
+void conta_poupanca(){
     char resposta[10]; 
     do {
         for (int i = 0; i < 1; i++) {
@@ -144,7 +149,7 @@ void conta_poupanca() { //armazenar no arquivo
             scanf("%s", cp[i].agencia);
 
             printf("Digite o numero da conta:\n");
-            scanf("%d", &cp[i].num);
+            scanf("%ld", &cp[i].num);
             getchar(); 
 
             printf("Digite o nome do cliente:\n");
@@ -188,13 +193,13 @@ void conta_poupanca() { //armazenar no arquivo
         }
         total_funcionarios++; // Incrementa o contador de funcionários/clientes
 
-        printf("Deseja cadastrar mais um cliente/funcionario? (sim/nao)\n");
+        printf("Deseja cadastrar mais um cliente/funcionario como conta poupanca? (sim/nao)\n");
         scanf("%s", resposta);
         getchar(); 
     } while (strcmp(resposta, "sim") == 0);
     menu_funcionario();
 }
-void conta_corrente() { //armazenar no arquivo
+void conta_corrente(){
     char resposta[10]; 
 
     do {
@@ -203,7 +208,7 @@ void conta_corrente() { //armazenar no arquivo
             scanf("%s", cc[i].agencia);
 
             printf("Digite o numero da conta:\n");
-            scanf("%d", &cc[i].num);
+            scanf("%ld", &cc[i].num);
             getchar(); 
 
             printf("Digite o limite da conta:\n");
@@ -234,9 +239,9 @@ void conta_corrente() { //armazenar no arquivo
             scanf("%d", &cc[i].cep);
 
             printf("Digite o local:\n");
-            fgets(cc[i].local, tam, stdin);
+            fgets(cc[i].local,tam, stdin);
 
-            printf("Digite o numero da casa:\n");
+            printf("Digite o numero da casa/apartamento:\n");
             scanf("%d", &cc[i].casa);
             getchar(); 
 
@@ -254,14 +259,13 @@ void conta_corrente() { //armazenar no arquivo
         }
         total_funcionarios++; 
 
-        printf("Deseja cadastrar mais um cliente/funcionario? (sim/nao)\n");
+        printf("Deseja cadastrar mais um cliente/funcionario como conta corrente? (sim/nao)\n");
         scanf("%s", resposta);
         getchar();
     } while (strcmp(resposta, "sim") == 0);
     menu_funcionario();
 }
-void abertura_conta()
-{
+void abertura_conta(){    
     int opcao = 0;
     printf("ABERTURA DE CONTA\n\n");
     printf("1- Conta poupança\n2- Conta corrente\n3- Voltar\n");
@@ -290,9 +294,10 @@ void abertura_conta()
     }
 }
 
-//2- encerramento de conta
-void encerramento_conta(){
-    int senha;
+
+//2- encerramento de conta - (erro na exclusão das contas)
+void encerramento_conta(){ 
+    int num;
     int opcao;
     char resposta[10];
 
@@ -305,39 +310,113 @@ void encerramento_conta(){
         return;
     }
 
-    do{
-        printf("Digite a senha de administrador:\n");
-        scanf("%d", &senha);
+    do {
+        printf("Digite o numero da conta que deseja excluir\n");
+        scanf("%d", &num);
+        int contaEncontrada = 0;
 
-        if (senha == senha_adm){
-            int num;
-            printf("ENCERRAMENTO DE CONTA\n\n");
-            printf("Digite o numero da conta que deseja excluir:\n");
-            scanf("%d", &num);
+        // Verifica primeiro nas contas correntes
+        for(int i = 0; i < total_pessoas; i++) {
+            if(num == cc[i].num) {
+                for(int j = i; j < total_pessoas - 1; j++) {
+                    cc[j] = cc[j+1];
+                }
+                total_pessoas--;
+                printf("Conta corrente excluida com sucesso!\n\n");
+                contaEncontrada = 1;
+                break;
+            }
+        }
 
-            for(int i=0; i<total_pessoas; i++){
-                if(num == cc[i].num || num == cp[i].num){
-                    for(int j=i; j<total_pessoas-1; j++){
-                        cc[j] = cc[j+1];
+        // Se não encontrou na conta corrente, verifica nas contas poupança
+        if(!contaEncontrada) {
+            for(int i = 0; i < total_pessoas; i++) {
+                if(num == cp[i].num) {
+                    for(int j = i; j < total_pessoas - 1; j++) {
                         cp[j] = cp[j+1];
                     }
                     total_pessoas--;
+                    printf("Conta poupança excluida com sucesso!\n\n");
+                    contaEncontrada = 1;
                     break;
                 }
-            }  
-        } else {
-            printf("Senha digitada incorreta.\n");
-            menu_funcionario();
-            return;
+            }
         }
 
-        printf("Deseja continuar? (sim/nao): ");
-        scanf("%s", resposta);
+        if(!contaEncontrada) {
+            printf("Conta excluida ou inexistente.\n\n\n");
+            break;
+        }
+
+        // ... código posterior ...
     } while(strcmp(resposta, "nao") != 0);
     menu_funcionario();
 }
 
-//3- consultar dados
+
+//3- consultar dados - (consultar_contas - imcompleta)
+void consultar_dados(){
+    int opcao;
+    do {
+        printf("CONSULTA DE DADOS\n\n");
+        printf("1- Consultar Conta\n2- Consultar Funcionario\n3- Consultar Cliente\n4- Voltar\n");
+        scanf("%d", &opcao);
+        while(getchar() != '\n'); // Limpa o buffer de entrada
+
+        if(opcao >= 1 && opcao <= 4){
+            switch (opcao){
+                case 1:
+                    //consultar_contas()
+                    break;
+
+                case 2:
+                    //consulta_funcionarios()
+                    break;
+
+                case 3:
+                    //consultar_clientes()
+                    break;
+
+                case 4:
+                    menu_funcionario();
+                    break;
+            }
+        } else {
+            printf("Numero digitado invalido.\n");
+        }
+    } while(opcao < 1 || opcao > 4);
+}
+void consultar_contas(){ 
+    int num;
+    printf("Digite o numero da conta que deseja consultar:\n");
+    scanf("%d", &num);
+
+    for(int i=0;i<total_pessoas;i++){
+        if(num == cc[i].num){ //conta corrente
+            printf("tipo de conta: Conta corrente\n");
+            printf("Nome:\n");
+            printf("CPF:\n");
+            printf("Saldo da conta:\n");
+            printf("limite da conta:\n");
+            printf("Data de vencimento:\n");
+            system("pause");
+            printf("Aperte qualquer tecla.\n");
+            consultar_dados();
+       }
+       if (num == cp[i].num){ //conta poupanca
+            printf("tipo de conta: Conta corrente\n");
+            printf("Nome:\n");
+            printf("CPF:\n");
+            printf("Saldo da conta:\n");
+            printf("limite da conta:\n");
+            printf("Data de vencimento:\n");
+            system("pause");
+            printf("Aperte qualquer tecla.\n");
+            consultar_dados();
+        }   
+    }
+}
+
 
 //4- alterar dados
 
@@ -346,119 +425,25 @@ void encerramento_conta(){
 //6- gerar relatorios
 
 
-//- MENU -
-void menu_funcionario(void)
-{
-    int opcao;
-    int senha;
-    printf("MENU FUNCIONARIO\n\n");
-    printf("1- Abertura de conta.\n2- Encerramento da conta.\n3- Consultar dados.\n4- Alterar dados.\n5- Cadastro de funcionario.\n6- Gerar relatoios.\n7- Voltar ao MENU PRINCIPAL.\n");
-    scanf("%d", &opcao);
-
-    // verificar se o numero digitado é inteiro//
-
-    if (opcao > 0 && opcao < 8)
-    {
-        switch (opcao)
-        {
-        case 1:
-            abertura_conta();
-            break;
-
-        case 2:
-            printf("Digite a senha de administrador:\n");
-            scanf("%d", &senha);
-            if(senha == senha_adm){
-                encerramento_conta();
-            }else{
-                printf("Senha nao corresponde.\n\n");
-                menu_funcionario();
-            }
-            break;
-
-        case 3:
-            // consultar_dados();
-            break;
-
-        case 4:
-            break;
-
-        case 5:
-            // cadastro_funcionario();
-            break;
-
-        case 6:
-            // gerar_relatorios();
-            break;
-
-        case 7:
-            menu_principal();
-            break;
-        }
-    }
-    else
-    {
-        printf("numero digitado invalido.\n");
-        menu_principal();
-    }
-}
-
-void menu_principal()
-{
-    // MENSAGEM DO "MALVADER'S BANK"
-
-    int opcao;
-    int senha=0;
-    do
-    {
-        printf("MENU PRINCIPAL\n\n");
-        printf("1 - Menu funcionario\n");
-        printf("2 - Menu cliente\n");
-        printf("3 - Sair\n\n");
-        fflush(stdin);
-        scanf("%d", &opcao);
-
-        if (opcao > 0 && opcao < 4)
-        {
-            switch (opcao)
-            {
-            case 1:
-                printf("Digite a senha de  administrador:\n");
-                scanf("%d", &senha);
-                if(senha == senha_adm){
-                    menu_funcionario();
-                }else{
-                    printf("Senha nao corresponde.\n\n");
-                    menu_principal();
-                }
-                break;
 
 
-            case 2:
-               printf("Digite a senha de administrador:\n");
-               scanf("%d", &senha);
-               if(senha == senha_adm){
-                 menu_cliente();
-               }else{
-                printf("Senha nao corresponde.\n\n");
-                menu_funcionario();
-               }
-               
-                break;
+//                     -- MENU CLIENTE --  
 
-            case 3:
-                printf("Até logo!\n\n");
-                printf("AQUI O SEU DINHEIRO GANHA FORCA\n-MALVADER'S BANK\n\n\n");
-                break;
-            }
-        }
-        else
-        {
-            printf("Numero digitado não corresponde as opções.\n");
-        }
-    } while (opcao < 0 || opcao > 3);
-}
 
+//1-Saldo
+
+//2-Deposito
+
+//3-Saque
+
+//4-Extrato
+
+//5-Consultar limite
+
+
+
+
+//- MENUS -
 void menu_cliente(){
     
     int opcao;
@@ -503,5 +488,117 @@ void menu_cliente(){
         menu_principal();
     }
 }
+
+void menu_funcionario(){
+    int opcao;
+    int senha;
+    printf("MENU FUNCIONARIO\n\n");
+    printf("1- Abertura de conta.\n2- Encerramento da conta.\n3- Consultar dados.\n4- Alterar dados.\n5- Cadastro de funcionario.\n6- Gerar relatoios.\n7- Voltar ao MENU PRINCIPAL.\n");
+    scanf("%d", &opcao);
+
+    // verificar se o numero digitado é inteiro//
+
+    if (opcao > 0 && opcao < 8)
+    {
+        switch (opcao)
+        {
+        case 1:
+            abertura_conta();
+            break;
+
+        case 2:
+            printf("Digite a senha de administrador:\n");
+            scanf("%d", &senha);
+            if(senha == senha_adm){
+                encerramento_conta();
+            }else{
+                printf("Senha nao corresponde.\n\n");
+                menu_funcionario();
+            }
+            break;
+
+        case 3:
+            consultar_dados();
+            break;
+
+        case 4:
+            //alterar_Dados
+            break;
+
+        case 5:
+            // cadastro_funcionario();
+            break;
+
+        case 6:
+            // gerar_relatorios();
+            break;
+
+        case 7:
+            menu_principal();
+            break;
+        }
+    }
+    else
+    {
+        printf("numero digitado invalido.\n");
+        menu_principal();
+    }
+}
+
+void menu_principal(){
+    // MENSAGEM DO "MALVADER'S BANK"
+
+    int opcao;
+    int senha=0;
+    do
+    {
+        printf("MENU PRINCIPAL\n\n");
+        printf("1 - Menu funcionario\n");
+        printf("2 - Menu cliente\n");
+        printf("3 - Sair\n\n");
+        fflush(stdin);
+        scanf("%d", &opcao);
+
+        if (opcao > 0 && opcao < 4)
+        {
+            switch (opcao)
+            {
+            case 1:
+                printf("Digite a senha de funcionario:\n");
+                scanf("%d", &senha);
+                if(senha == senha_funcionario){
+                    menu_funcionario();
+                }else{
+                    printf("Senha nao corresponde.\n\n");
+                    menu_principal();
+                }
+                break;
+
+
+            case 2:
+               printf("Digite a senha de cliente:\n");
+               scanf("%d", &senha);
+               if(senha == senha_cliente){
+                 menu_cliente();
+               }else{
+                printf("Senha nao corresponde.\n\n");
+                menu_funcionario();
+               }
+               
+                break;
+
+            case 3:
+                printf("Até logo!\n\n");
+                printf("AQUI O SEU DINHEIRO GANHA FORCA\n-MALVADER'S BANK\n\n\n");
+                break;
+            }
+        }
+        else
+        {
+            printf("Numero digitado não corresponde as opções.\n");
+        }
+    } while (opcao < 0 || opcao > 3);
+}
+
 
 #endif
