@@ -31,7 +31,7 @@ void encerramento_conta();
 void consultar_dados();
 // void consultar_contas();
 // void consultar_clientes();
-// void consultar_funcionarios();
+void consultar_funcionario();
 // void alterar_dados();
 // void alterar_conta();
 // void alterar_funcionarios();
@@ -39,7 +39,49 @@ void consultar_dados();
 // void cadastro_funcionario();
 // void gerar_relatorios();
 
+void deposito_cliente();
+void saque_cliente();
+
 // Dados
+struct Registro
+   { 
+     float codigo;
+    char cargo[tam];
+    char nome[tam];
+    int cpf;
+    int nascimento;
+    int telefone;
+    char endereco[tam];
+    int cep;
+    int casa;
+    char bairro[tam];
+    char cidade[tam];
+    char estado[tam];
+    int senha;
+    int excluido; // Para marcar se o registro está excluído (0 ou 1)
+   };
+struct Funcionario{
+    float saldo;
+    char agencia[tam];
+    int num;
+    float limite;
+    int codigo;
+    char cargo[30];
+    char nome[20];
+    int cpf; 
+    int nascimento;
+    int telefone;
+    char endereco[tam];
+    int cep;
+    char local[tam];
+    int num_casa;
+    char bairro [tam];
+    char cidade[tam]; 
+    char estado[tam];
+    int senha;
+};
+Funcionario employee[tam];
+
 struct Cliente {
     float saldo;
     char agencia[tam];
@@ -52,14 +94,13 @@ struct Cliente {
     int telefone;
     char endereco[tam];
     int cep;
-    char local[tam];
     int casa;
     char bairro[tam];
     char cidade[tam];
     char estado[tam];
-    int senha;
 };
 Cliente client[tam];
+
 struct Poupanca{
     char agencia[tam];
     long int num;
@@ -97,50 +138,184 @@ struct ContaCorrente {
 Poupanca cp[tam];
 ContaCorrente cc[tam];
 
-//armazenamento no arquivo
-void criarArquivoClientes(const char *nomeArquivo, struct Cliente clientes[], int numClientes){
-    // Abre o arquivo para escrita
-    FILE *arquivo = fopen(nomeArquivo, "w");
 
-    // Verifica se o arquivo foi aberto corretamente
-    if (arquivo == NULL) {
-        fprintf(stderr, "Erro ao abrir o arquivo %s\n", nomeArquivo);
+
+
+
+
+//armazenamento no arquivo
+int Consulta_registro(FILE *arquivo, Registro registro)
+ {
+  Registro registro_lido;
+  int posicao;
+  if(arquivo != NULL)
+    {
+	  fseek(arquivo, 0L, SEEK_SET);
+      posicao = 0;
+      // repete enquanto nao chega ao final do arquivo
+      while(fread(&registro_lido, sizeof(registro_lido), 1, arquivo))
+        {
+          if(strcmpi(registro_lido.nome, registro.nome)==0 && (registro_lido.excluido == 0))
+          return posicao;
+          posicao++;
+        };
+    }
+   return -1;
+ }
+// Função que insere um registro no arquivo
+// Retorna:
+// 1 se o registro foi incluído com sucesso
+// 0 se o registro não pode ser incluído
+
+int Insere_registro(FILE *arquivo, Registro registro)
+ {
+   Registro registro_lido;
+   int posicao ;
+   if(arquivo != NULL)
+    {
+	  posicao = 0;
+      if(Consulta_registro(arquivo, registro))
+        {
+		  fseek(arquivo, 0L, SEEK_SET);
+          // repete enquanto nao chega ao final do arquivo
+          while(fread(&registro_lido, sizeof(registro_lido), 1, arquivo))
+            { 
+			  if(registro_lido.excluido == 1)
+                break;
+                posicao++;
+            };
+          fseek(arquivo, posicao*sizeof(registro), SEEK_SET);
+          registro.excluido = 0;
+          if(fwrite(&registro, sizeof(registro), 1, arquivo)) // grava registro
+             return 1;
+        }
+    }
+   return 0;
+ }
+// Função Exclui um registro do arquivo
+// Retorna:
+// 1 se o registro foi excluído com sucesso
+// 0 se o registro não pode ser excluído
+
+int Exclui_registro(FILE *arquivo, Registro registro)
+ { 
+   int posicao;
+   if(arquivo != NULL)
+       { 
+	      posicao = Consulta_registro(arquivo, registro);
+          if(posicao != -1)
+            { 
+			   fseek(arquivo, posicao*sizeof(registro), SEEK_SET);
+               registro.excluido = 1;
+               if(fwrite(&registro, sizeof(registro), 1, arquivo))
+                  return 1;
+            }
+        }
+    return 0;
+ }
+// Função que altera um registro do arquivo
+// Retorna:
+// 1 se o registro foi alterado com sucesso
+// 0 se o registro não pode ser alterado
+
+int Altera_registro(FILE *arquivo, Registro registro_antigo, Registro registro_novo)
+ { 
+    int posicao;
+
+    if (arquivo != NULL) {
+        posicao = Consulta_registro(arquivo, registro_antigo);
+        if (posicao != -1) {
+            fseek(arquivo, posicao * sizeof(Registro), SEEK_SET);
+            fread(&registro_antigo, sizeof(Registro), 1, arquivo);
+            // Atualiza os dados com os novos valores
+            registro_antigo.codigo = registro_novo.codigo;
+            strcpy(registro_antigo.cargo, registro_novo.cargo);
+            strcpy(registro_antigo.nome, registro_novo.nome);
+            registro_antigo.cpf = registro_novo.cpf;
+            registro_antigo.nascimento = registro_novo.nascimento;
+            registro_antigo.telefone = registro_novo.telefone;
+            strcpy(registro_antigo.endereco, registro_novo.endereco);
+            registro_antigo.cep = registro_novo.cep;
+            registro_antigo.casa = registro_novo.casa;
+            strcpy(registro_antigo.bairro, registro_novo.bairro);
+            strcpy(registro_antigo.cidade, registro_novo.cidade);
+            strcpy(registro_antigo.estado, registro_novo.estado);
+            registro_antigo.senha = registro_novo.senha;
+            // Volta para a posição do registro no arquivo e escreve as alterações
+            fseek(arquivo, posicao * sizeof(Registro), SEEK_SET);
+            fwrite(&registro_antigo, sizeof(Registro), 1, arquivo);
+            return 1; // Sucesso na alteração
+        }
+    }
+    return 0; // Falha na alteração (registro não encontrado ou erro de arquivo)
+}
+
+void incluirFuncionario() {
+  FILE *Arquivo;
+    Registro novoFuncionario;
+
+    Arquivo = fopen("funcionarios.txt", "a+");
+    if (Arquivo == NULL) {
+        printf("Erro na abertura do arquivo.\n");
         return;
     }
 
-    // Escreve os dados dos clientes no arquivo
-    for (int i = 0; i < numClientes; ++i) {
-        fprintf(arquivo, "Nome: %s\n", clientes[i].nome);
-        fprintf(arquivo, "Agencia: %s\n", clientes[i].agencia);
-        fprintf(arquivo, "Num: %d\n", clientes[i].num);
-        fprintf(arquivo, "Saldo: %f\n", clientes[i].saldo);
-        fprintf(arquivo, "Limite: %f\n", clientes[i].limite);
-        fprintf(arquivo, "Vencimento: %d\n", clientes[i].vencimento);
-        fprintf(arquivo, "CPF: %d\n", clientes[i].cpf);
-        fprintf(arquivo, "Nascimento: %d\n", clientes[i].nascimento);
-        fprintf(arquivo, "Telefone: %d\n", clientes[i].telefone);
-        fprintf(arquivo, "Endereço: %s\n", clientes[i].endereco);
-        fprintf(arquivo, "CEP: %d\n", clientes[i].cep);
-        fprintf(arquivo, "Local: %s\n", clientes[i].local);
-        fprintf(arquivo, "Casa: %d\n", clientes[i].casa);
-        fprintf(arquivo, "Bairro: %s\n", clientes[i].bairro);
-        fprintf(arquivo, "Cidade: %s\n", clientes[i].cidade);
-        fprintf(arquivo, "Estado: %s\n", clientes[i].estado);
-        fprintf(arquivo, "Senha: %d\n", clientes[i].senha);
-        fprintf(arquivo, "\n"); // Linha em branco para separar os registros
-    }
+	printf("\n Preencha os campos para cadastramento do novo Funcionario. \n\n");
 
-    // Fecha o arquivo
-    fclose(arquivo);
-    printf("Arquivo %s criado com sucesso!\n", nomeArquivo);
+    printf("Digite o codigo do funcionario: \n");
+    scanf("%f", &novoFuncionario.codigo);
+
+    printf("Digite o cargo do funcionario: \n");
+    scanf(" %[^\n]", novoFuncionario.cargo);
+
+    printf("Digite o nome do funcionario: \n");
+    scanf(" %[^\n]", novoFuncionario.nome);
+
+    printf("Digite o CPF do funcionario: \n");
+    scanf("%d", &novoFuncionario.cpf);
+
+    printf("Digite a data de nascimento do funcionario: \n");
+    scanf("%d", &novoFuncionario.nascimento);
+
+    printf("Digite o telefone do funcionario: \n");
+    scanf("%d", &novoFuncionario.telefone);
+
+    printf("Digite o endereco do funcionario: \n");
+    scanf(" %[^\n]", novoFuncionario.endereco);
+
+    printf("Digite o CEP do funcionario: \n");
+    scanf("%d", &novoFuncionario.cep);
+
+    printf("Digite o numero da casa do funcionario: \n");
+    scanf("%d", &novoFuncionario.casa);
+
+    printf("Digite o bairro do funcionario: \n");
+    scanf(" %[^\n]", novoFuncionario.bairro);
+
+    printf("Digite a cidade do funcionario: \n");
+    scanf(" %[^\n]", novoFuncionario.cidade);
+
+    printf("Digite o estado do funcionario: \n");
+    scanf(" %[^\n]", novoFuncionario.estado);
+
+    printf("Digite a senha do funcionario: \n");
+    scanf("%d", &novoFuncionario.senha);
+
+    Insere_registro(Arquivo, novoFuncionario);
+
+    fclose(Arquivo);
+    
+    return menu_funcionario();
 }
+
+
 
 
 
 //                  --  MENU FUNCIONARIO  --                               
 
 
-//1- Abertura de conta - (erro na captura do local do usuario)
+// 1- Abertura de conta - (erro na captura do local do usuario)
 void conta_poupanca(){
     char resposta[10]; 
     do {
@@ -191,7 +366,7 @@ void conta_poupanca(){
             printf("Digite a senha do cliente:\n");
             scanf("%d", &cp[i].senha);
         }
-        total_funcionarios++; // Incrementa o contador de funcionários/clientes
+        total_pessoas++; // Incrementa o contador de funcionários/clientes
 
         printf("Deseja cadastrar mais um cliente/funcionario como conta poupanca? (sim/nao)\n");
         scanf("%s", resposta);
@@ -295,7 +470,8 @@ void abertura_conta(){
 }
 
 
-//2- encerramento de conta - (erro na exclusão das contas)
+
+// 2- encerramento de conta - (erro na exclusão das contas)
 void encerramento_conta(){ 
     int num;
     int opcao;
@@ -354,7 +530,8 @@ void encerramento_conta(){
 }
 
 
-//3- consultar dados - (consultar_contas (adicionar variaveis nas structs cc e cp))
+
+// 3- consultar dados - //consultar_contas (adicionar variaveis nas structs cc e cp)// - //consultar_clientes (fazer a função)// - //Consultar_funcionarios (revisar a função)// )
 void consultar_dados(){
     int opcao;
     do {
@@ -370,7 +547,7 @@ void consultar_dados(){
                     break;
 
                 case 2:
-                    //consulta_funcionarios()
+                    void consultar_funcionarios();
                     break;
 
                 case 3:
@@ -397,7 +574,7 @@ void consultar_contas(){
             printf("tipo de conta: Conta corrente\n");
             printf("Nome:%s\n", cc[i].nome);
             printf("CPF:%d\n", cc[i].cpf);
-            printf("Saldo da conta:%f\n"); // Supondo que saldo é um float
+            printf("Saldo da conta:\n"); // Adicionar saldo na struct cc
             printf("limite da conta:%f\n", cc[i].limite);
             printf("Data de vencimento:%d\n", cc[i].vencimento);
             system("pause");
@@ -410,9 +587,9 @@ void consultar_contas(){
             printf("tipo de conta: Conta poupanca\n");
             printf("Nome:%s\n", cp[i].nome);
             printf("CPF:%d\n", cp[i].cpf);
-            printf("Saldo da conta:%f\n"); // adicionar saldo na struct cp 
-            printf("Limite:%f\n"); // adicionar saldo na struct cp
-            printf("Data de vencimento:%d\n"); // adicionar saldo na struct 
+            printf("Saldo da conta:\n"); // adicionar saldo na struct cp 
+            printf("Limite:\n"); // adicionar limite na struct cp
+            printf("Data de vencimento:\n"); // adicionar vencimento na struct 
             system("pause");
             printf("Aperte qualquer tecla.\n");
             consultar_dados();
@@ -426,14 +603,61 @@ void consultar_contas(){
     system("pause");
     menu_funcionario();
 }
+void consultar_clientes(){
+
+}
+void consultar_funcionarios() {
+    FILE *Arquivo;
+    Registro registro_lido;
+
+    Arquivo = fopen("funcionarios.txt", "r"); // Abre o arquivo em modo binário de leitura
+    if (Arquivo == NULL) {
+        printf("Erro na abertura do arquivo.\n");
+        return;
+    }
+
+    printf("Funcionários cadastrados:\n");
+
+    // Lê e imprime todos os registros não excluídos
+    while (fread(&registro_lido, sizeof(Registro), 1, Arquivo) == 1) {
+        if (registro_lido.excluido == 0) {
+            printf("Código: %.2f\n", registro_lido.codigo);
+            printf("Cargo: %s\n", registro_lido.cargo);
+            printf("Nome: %s\n", registro_lido.nome);
+            printf("CPF: %d\n", registro_lido.cpf);
+            printf("Nascimento: %d\n", registro_lido.nascimento);
+            printf("Telefone: %d\n", registro_lido.telefone);
+            printf("Endereço: %s\n", registro_lido.endereco);
+            printf("CEP: %d\n", registro_lido.cep);
+            printf("Casa: %d\n", registro_lido.casa);
+            printf("Bairro: %s\n", registro_lido.bairro);
+            printf("Cidade: %s\n", registro_lido.cidade);
+            printf("Estado: %s\n", registro_lido.estado);
+            printf("Senha: %d\n", registro_lido.senha);
+            printf("--------------------\n");
+        }
+    }
+
+    fclose(Arquivo);
+}
 
 
-//4- alterar dados
 
-//5- cadastro de funcionarios
+// 4- alterar dados
+// void alterar_dados()
+// void alterar_conta
+// void alterar_funcionarios
+// void alterar_clientes
 
-//6- gerar relatorios
 
+
+// 5- cadastro de funcionarios
+// void cadastro_funcionarios
+
+
+// 6- gerar relatorios
+//  void gerar_relaroios
+// void relatorio_geral
 
 
 
@@ -442,23 +666,120 @@ void consultar_contas(){
 
 //1-Saldo
 
-//2-Deposito
 
-//3-Saque
+
+//2-Deposito - //revisar a função//
+void deposito_cliente() {
+    int saldo = 2000; // Saldo inicial de 2000 reais
+    int valor;
+
+    // Entrada do valor a ser depositado
+    printf("Digite o valor a ser depositado: ");
+    if (scanf("%d", &valor) != 1 || valor <= 0) {
+        printf("Valor de depósito inválido.\n");
+        return;
+    }
+
+    // Atualização do saldo
+    saldo += valor;
+    printf("Depósito realizado com sucesso.\n");
+    printf("Novo saldo: %d\n", saldo);
+}
+
+
+//3-Saque - //revisar a função//
+void saque_cliente() {
+    int valores_notas[] = {100, 50, 20, 10, 5, 2, 1};
+    int saldo = 2000; // Saldo inicial de 2000 reais
+    int notas[7] = {0}; // Inicializar array de notas com zero
+    int valor;
+
+
+    // Entrada do valor do saque
+    printf("Digite o valor do saque: ");
+    if (scanf("%d", &valor) != 1 || valor < 0) {
+        printf("Entrada inválida.\n");
+        return;
+    }
+
+    // Verificação do saldo
+    if (valor > saldo) {
+        printf("Saldo insuficiente.\n");
+        return;
+    }
+
+    // Processo de saque
+    for (int i = 0; i < 7; i++) {
+        notas[i] = valor / valores_notas[i];
+        valor %= valores_notas[i];
+    }
+
+    // Imprimir as notas
+    printf("Notas:\n");
+    for (int i = 0; i < 7; i++) {
+        if (notas[i] > 0) {
+            printf("%d notas de %d\n", notas[i], valores_notas[i]);
+        }
+    }
+
+    // Atualizar o saldo
+    saldo -= valor;
+    printf("Dinheiro sacado com sucesso.\n");
+    printf("Novo saldo: %d\n", saldo);
+}
+
 
 //4-Extrato
+
 
 //5-Consultar limite
 
 
+//6-cadastro cliente
+void cadastro_cliente(){// incompleta (armazenar os dados na variavel Client)
+    char resposta[tam];
+    do{
+       for(int i=0;i<1;i++){
+        printf("CADASTRO DE CLIENTES\n\n");
+
+        printf("Digite o nome:\n");
+
+        printf("Digite o CPF:\n");
+
+        printf("Digite a data de nascimento:\n");
+
+        printf("Digite o telefone de contato:\n");
+
+        printf("Digite o endereço:");
+
+        printf("Digite o CEP:\n");
+
+        printf("Digite o N.casa/apt:\n");
+
+        printf("Digite o bairro:\n");
+
+        printf("Digite a cidade:\n");
+
+        printf("Digite o estado:\n");
+        }
+
+        total_clientes++;
+        printf("Conta cadastrada com sucesso!!\n");
+        printf("Deseja cadastrar mais um cliente?\n");
+    }while (strcmp(resposta, "sim") == 0);
+    menu_cliente();
+}
+
+
+//7- sair
 
 
 //- MENUS -
 void menu_cliente(){
-    
+    int senha=0;
     int opcao;
     printf("MENU CLIENTE\n\n");
-    printf("1- Saldo.\n2- Deposito.\n3- Saque.\n4- Extrato.\n5- Consultar limite.\n6- SAIR.\n");
+    printf("1- Saldo.\n2- Deposito.\n3- Saque.\n4- Extrato.\n5- Consultar limite.\n6- Cadastrar cliente\n7- Voltar\n");
     scanf("%d", &opcao);
 
     // verificar se o numero digitado é inteiro//
@@ -488,6 +809,15 @@ void menu_cliente(){
             break;
 
         case 6:
+            printf("Digite a senha de administrador:\n");
+            scanf("%d", &senha);
+            if(senha == senha_adm){
+                cadastro_cliente();
+            }else{
+                printf("Senha nao corresponde.\n\n");
+                menu_cliente();
+            }
+        case 7:
             menu_principal();
             break;
         }
@@ -501,9 +831,9 @@ void menu_cliente(){
 
 void menu_funcionario(){
     int opcao;
-    int senha;
+    int senha=0;
     printf("MENU FUNCIONARIO\n\n");
-    printf("1- Abertura de conta.\n2- Encerramento da conta.\n3- Consultar dados.\n4- Alterar dados.\n5- Cadastro de funcionario.\n6- Gerar relatoios.\n7- Voltar ao MENU PRINCIPAL.\n");
+    printf("1- Abertura de conta.\n2- Encerramento da conta.\n3- Consultar dados.\n4- Alterar dados.\n5- Cadastro de funcionario.\n6- Gerar relatoios.\n7- Voltar\n");
     scanf("%d", &opcao);
 
     // verificar se o numero digitado é inteiro//
@@ -536,7 +866,14 @@ void menu_funcionario(){
             break;
 
         case 5:
-            // cadastro_funcionario();
+            printf("Digite a senha de administrador:\n");
+            scanf("%d", &senha);
+            if(senha == senha_adm){
+                //cadastro_funcionario();
+            }else{
+                printf("Senha nao corresponde.\n\n");
+                menu_funcionario();
+            }
             break;
 
         case 6:
