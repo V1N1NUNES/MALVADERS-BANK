@@ -23,22 +23,29 @@ int total_pessoas = total_funcionarios + total_clientes;
 void menu_principal();
 void menu_funcionario();
 void menu_cliente();
+
 void abertura_conta();
 void conte_corrente();
 void conta_poupanca();
-void criarArquivoClientes();
+
 void encerramento_conta();
+
 void consultar_dados();
 void consultar_contas();
 // void consultar_clientes();
 void consultar_funcionario();
+
 // void alterar_dados();
 // void alterar_conta();
 // void alterar_funcionarios();
 // void alterar_clientes();
-// void cadastro_funcionario();
+
+void cadastro_funcionario();
+
 // void gerar_relatorios();
 
+void extrato_cliente();
+void criarArquivoClientes();
 void deposito_cliente();
 void saque_cliente();
 
@@ -74,7 +81,7 @@ struct Funcionario{
     char endereco[tam];
     int cep;
     char local[tam];
-    int num_casa;
+    int casa;
     char bairro [tam];
     char cidade[tam]; 
     char estado[tam];
@@ -479,7 +486,7 @@ void abertura_conta(){
 void encerramento_conta(){ 
     int num;
     int opcao;
-    char resposta[10];
+    char resposta[tam];
 
     printf("ENCERRAMENTO DE CONTA\n\n");
     printf("1- Excluir Conta\n2- Voltar\n");
@@ -528,7 +535,7 @@ void encerramento_conta(){
             break;
         }
         printf("Deseja excluir mais contas?\n");
-        scanf("%s", &resposta);
+        scanf("%s", resposta);
         getchar();
         // ... código posterior ...
     } while(strcmp(resposta, "nao") != 0);
@@ -610,7 +617,6 @@ void consultar_contas(){
 }
 void consultar_clientes(){
     int num;
-    char resposta[tam];
     int contaEncontrada;
 
     printf("Digite o numero da conta que deseja consultar:\n");
@@ -684,7 +690,57 @@ void consultar_funcionarios() {
 
 
 // 5- cadastro de funcionarios
-// void cadastro_funcionarios
+void cadastro_funcionarios(){
+    char resposta[10];
+    do{
+       for(int i=0;i<1;i++){
+        printf("CADASTRO DE FUNCIONARIO\n\n");
+
+            printf("Digite o codigo do funcionario:\n");
+            printf("Digite o nome:\n");
+            getchar(); 
+            fgets(cc[i].nome, tam, stdin);
+
+            printf("Digite o CPF:\n");
+            scanf("%d", &employee[i].cpf);
+
+            printf("Digite a data de nascimento:\n");
+            scanf("%d", &employee[i].nascimento);
+
+            printf("Digite o telefone/celular:\n");
+            scanf("%d", &employee[i].telefone);
+            getchar(); 
+
+            printf("Digite o endereco do cliente:\n");
+            fgets(employee[i].endereco, tam, stdin);
+
+            printf("Digite o CEP:\n");
+            scanf("%d", &employee[i].cep);
+
+            printf("Digite o numero da casa/apartamento:\n");
+            scanf("%d",&employee[i].casa);
+            getchar(); 
+
+            printf("Digite o bairro:\n");
+            fgets(employee[i].bairro, tam, stdin);
+
+            printf("Digite a cidade:\n");
+            fgets(employee[i].cidade, tam, stdin);
+
+            printf("Digite o estado:\n");
+            fgets(employee[i].estado, tam, stdin);
+
+            printf("Digite a senha do funcionario:\n");
+            scanf("%d", &employee[i].senha);
+       }
+        printf("Conta cadastrada com sucesso!!\n");
+        total_funcionarios++;  
+        printf("Deseja cadastrar mais um cliente?\n");
+        scanf("%s", resposta);
+    }while (strcmp(resposta, "sim") == 0);
+    menu_cliente();
+
+}
 
 
 // 6- gerar relatorios
@@ -762,7 +818,24 @@ void saque_cliente() {
 
 
 //4-Extrato
+void extrato_cliente(){
+    char comando[100];
+    char nomeArquivo[] = "extrato.xlsx";
 
+    // Construir o comando para iniciar o Excel com o arquivo .xlsx
+    sprintf(comando, "start excel.exe %s", nomeArquivo);
+
+    // Executar o comando usando system
+    int status = system(comando);
+
+    if (status == 0) {
+        printf("Excel foi aberto com sucesso.\n");
+    } else {
+        printf("Erro ao abrir Excel.\n");
+    }
+
+    return ;
+}
 
 //5-Consultar limite
 
@@ -775,7 +848,7 @@ void cadastro_cliente(){ //verificar se esta funcionando//
         printf("CADASTRO DE CLIENTES\n\n");
 
         printf("Digite o nome:\n");
-        scanf("%s", &client[i].nome);
+        scanf("%s", client[i].nome);
 
         printf("Digite o CPF:\n");
         scanf("%d", &client[i].cpf);
@@ -810,6 +883,7 @@ void cadastro_cliente(){ //verificar se esta funcionando//
         total_clientes++;
         printf("Conta cadastrada com sucesso!!\n");
         printf("Deseja cadastrar mais um cliente?\n");
+        scanf("%s", resposta);
     }while (strcmp(resposta, "sim") == 0);
     menu_cliente();
 }
@@ -913,7 +987,7 @@ void menu_funcionario(){
             printf("Digite a senha de administrador:\n");
             scanf("%d", &senha);
             if(senha == senha_adm){
-                //cadastro_funcionario();
+                cadastro_funcionario();
             }else{
                 printf("Senha nao corresponde.\n\n");
                 menu_funcionario();
