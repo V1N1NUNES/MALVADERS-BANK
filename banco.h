@@ -29,7 +29,7 @@ void conta_poupanca();
 void criarArquivoClientes();
 void encerramento_conta();
 void consultar_dados();
-// void consultar_contas();
+void consultar_contas();
 // void consultar_clientes();
 void consultar_funcionario();
 // void alterar_dados();
@@ -102,6 +102,8 @@ struct Cliente {
 Cliente client[tam];
 
 struct Poupanca{
+    int saldo;
+    int limite;
     char agencia[tam];
     long int num;
     char nome[tam];
@@ -115,9 +117,11 @@ struct Poupanca{
     char bairro[tam];
     char cidade[tam];
     char estado[tam];
+    int datav;
     int senha;
 };
 struct ContaCorrente {
+    int saldo;
     char agencia[tam];
     long int num;
     float limite;
@@ -432,7 +436,7 @@ void conta_corrente(){
             printf("Digite a senha do cliente:\n");
             scanf("%d", &cc[i].senha);
         }
-        total_funcionarios++; 
+        total_pessoas++; 
 
         printf("Deseja cadastrar mais um cliente/funcionario como conta corrente? (sim/nao)\n");
         scanf("%s", resposta);
@@ -523,7 +527,9 @@ void encerramento_conta(){
             printf("Conta excluida ou inexistente.\n\n\n");
             break;
         }
-
+        printf("Deseja excluir mais contas?\n");
+        scanf("%s", &resposta);
+        getchar();
         // ... código posterior ...
     } while(strcmp(resposta, "nao") != 0);
     menu_funcionario();
@@ -531,15 +537,13 @@ void encerramento_conta(){
 
 
 
-// 3- consultar dados - //consultar_contas (adicionar variaveis nas structs cc e cp)// - //consultar_clientes (fazer a função)// - //Consultar_funcionarios (revisar a função)// )
+// 3- consultar dados - //consultar_contas (saber o porque não esta funcionando a função)//  - //Consultar_funcionarios (revisar a função)// )
 void consultar_dados(){
     int opcao;
     do {
         printf("CONSULTA DE DADOS\n\n");
-        printf("1- Consultar Conta\n2- Consultar Funcionario\n3- Consultar Cliente\n4- Voltar\n");
+        printf("1- Consultar Contas\n2- Consultar Funcionario\n3- Consultar Cliente\n4- Voltar\n");
         scanf("%d", &opcao);
-        while(getchar() != '\n'); // Limpa o buffer de entrada
-
         if(opcao >= 1 && opcao <= 4){
             switch (opcao){
                 case 1:
@@ -564,7 +568,8 @@ void consultar_dados(){
     } while(opcao < 1 || opcao > 4);
 }
 void consultar_contas(){ 
-    int num, contaEncontrada = 0;
+    int num;
+    int contaEncontrada = 0;
     printf("Digite o numero da conta que deseja consultar:\n");
     scanf("%d", &num);
     
@@ -574,7 +579,7 @@ void consultar_contas(){
             printf("tipo de conta: Conta corrente\n");
             printf("Nome:%s\n", cc[i].nome);
             printf("CPF:%d\n", cc[i].cpf);
-            printf("Saldo da conta:\n"); // Adicionar saldo na struct cc
+            printf("Saldo da conta: %d\n", cc[i].saldo);
             printf("limite da conta:%f\n", cc[i].limite);
             printf("Data de vencimento:%d\n", cc[i].vencimento);
             system("pause");
@@ -587,9 +592,9 @@ void consultar_contas(){
             printf("tipo de conta: Conta poupanca\n");
             printf("Nome:%s\n", cp[i].nome);
             printf("CPF:%d\n", cp[i].cpf);
-            printf("Saldo da conta:\n"); // adicionar saldo na struct cp 
-            printf("Limite:\n"); // adicionar limite na struct cp
-            printf("Data de vencimento:\n"); // adicionar vencimento na struct 
+            printf("Saldo da conta: %d\n", cp[i].saldo);
+            printf("Limite: %d\n",cp[i].limite);
+            printf("Data de vencimento:%d\n", cp[i].datav);
             system("pause");
             printf("Aperte qualquer tecla.\n");
             consultar_dados();
@@ -604,13 +609,40 @@ void consultar_contas(){
     menu_funcionario();
 }
 void consultar_clientes(){
+    int num;
+    char resposta[tam];
+    int contaEncontrada;
 
+    printf("Digite o numero da conta que deseja consultar:\n");
+    scanf("%d", &num);
+
+    for(int i=0;i<total_clientes;i++){
+        if(num == client[i].num){
+            contaEncontrada = 1;
+            printf("Nome:%s\n",client[i].nome);
+            printf("CPF:%d\n",client[i].cpf);
+            printf("Data de nascimento:%d\n", client[i].nascimento);
+            printf("Telefone:%d\n", client[i].telefone);
+            printf("Endereço:%s\n", client[i].endereco);
+            printf("N. casa/apt:%d\n", client[i].casa);
+            printf("CEP:%d", client[i].cep);
+            printf("Bairro:%s", client[i].bairro);
+            printf("Cidade:%s", client[i].cidade);
+            printf("Estado:%s", client[i].estado);
+            break;
+        }
+    }
+    if (!contaEncontrada){
+        printf("Conta inexistente ou excluida.\n");
+    }
+    system("pause");
+    menu_funcionario();
 }
 void consultar_funcionarios() {
     FILE *Arquivo;
     Registro registro_lido;
 
-    Arquivo = fopen("funcionarios.txt", "r"); // Abre o arquivo em modo binário de leitura
+    Arquivo = fopen("funcionarios.txt", "r");
     if (Arquivo == NULL) {
         printf("Erro na abertura do arquivo.\n");
         return;
@@ -736,31 +768,43 @@ void saque_cliente() {
 
 
 //6-cadastro cliente
-void cadastro_cliente(){// incompleta (armazenar os dados na variavel Client)
+void cadastro_cliente(){ //verificar se esta funcionando//
     char resposta[tam];
     do{
        for(int i=0;i<1;i++){
         printf("CADASTRO DE CLIENTES\n\n");
 
         printf("Digite o nome:\n");
+        scanf("%s", &client[i].nome);
 
         printf("Digite o CPF:\n");
+        scanf("%d", &client[i].cpf);
 
         printf("Digite a data de nascimento:\n");
+        scanf("%d", &client[i].nascimento);
 
         printf("Digite o telefone de contato:\n");
+        scanf("%d",&client[i].telefone);
+        getchar();
 
-        printf("Digite o endereço:");
+        printf("Digite o endereco do cliente:\n");
+        fgets(client[i].endereco, tam, stdin);  
 
         printf("Digite o CEP:\n");
+        scanf("%d", &client[i].cep);
 
-        printf("Digite o N.casa/apt:\n");
+        printf("Digite o numero da casa/apartamento:\n");
+        scanf("%d", &client[i].casa);
+        getchar(); 
 
         printf("Digite o bairro:\n");
+        fgets(client[i].bairro, tam, stdin);
 
         printf("Digite a cidade:\n");
+        fgets(client[i].cidade, tam, stdin);
 
         printf("Digite o estado:\n");
+        fgets(client[i].estado, tam, stdin);
         }
 
         total_clientes++;
