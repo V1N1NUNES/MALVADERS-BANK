@@ -1,8 +1,7 @@
-#include "banco.h"
+#include "BANK.h"
 
 int main()
 {
     menu_principal();
     return 0;
-//test
 }
