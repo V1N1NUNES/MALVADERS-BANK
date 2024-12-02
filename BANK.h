@@ -41,13 +41,12 @@ void menu_principal();
 //void consultar_limite();
 
 
-//      funções de limpeza e gerenciamento
-
+//Funções de limpeza e gerenciamento
 void clean_buffer();
 void remove_newline(char *str);
 
 
-//funções 
+//Implemetação das funções
 void menu_principal()
 {
     
