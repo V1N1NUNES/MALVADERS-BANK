@@ -45,10 +45,4 @@ void menu_principal();
 void clean_buffer();
 void remove_newline(char *str);
 
-
-//Implemetação das funções
-void menu_principal()
-{
-    
-}
 #endif
